@@ -6,6 +6,7 @@ require (
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/lib/pq v1.10.9
 	github.com/mattn/go-sqlite3 v1.14.18
+	github.com/godror/godror v0.44.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.9.0
 	go.k6.io/k6 v0.51.1-0.20240610082146-1f01a9bc2365
