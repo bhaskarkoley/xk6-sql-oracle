@@ -8,6 +8,7 @@ import (
 	// Blank imports required for initialization of drivers
 	_ "github.com/ClickHouse/clickhouse-go/v2"
 	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/godror/godror"
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
 	_ "github.com/microsoft/go-mssqldb"
@@ -61,9 +62,13 @@ func contains(array []string, element string) bool {
 // Open establishes a connection to the specified database type using
 // the provided connection string.
 func (*SQL) Open(database string, connectionString string) (*dbsql.DB, error) {
-	supportedDatabases := []string{"mysql", "postgres", "sqlite3", "sqlserver", "azuresql", "clickhouse"}
+	supportedDatabases := []string{"mysql", "postgres", "sqlite3", "sqlserver", "azuresql", "clickhouse", "oracle"}
 	if !contains(supportedDatabases, database) {
 		return nil, fmt.Errorf("database %s is not supported", database)
+	}
+
+	if database == "oracle" {
+		database = "godror"
 	}
 
 	db, err := dbsql.Open(database, connectionString)
