@@ -1,4 +1,4 @@
-module github.com/grafana/xk6-sql
+module github.com/bhaskarkoley/xk6-sql-oracle
 
 go 1.21
 
