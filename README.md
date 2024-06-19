@@ -1,9 +1,9 @@
-# xk6-sql
+# xk6-sql-oracle
 
 This is a [k6](https://github.com/grafana/k6) extension using the
 [xk6](https://github.com/grafana/xk6) system.
 
-Supported RDBMSs: `mysql`, `postgres`, `sqlite3`, `sqlserver`, `azuresql`. See the [examples](examples)
+Supported RDBMSs: `mysql`, `postgres`, `sqlite3`, `sqlserver`, `azuresql`, `oracle`. See the [examples](examples)
 directory for usage. Other RDBMSs are not supported, see
 [details below](#support-for-other-rdbmss).
 
@@ -28,19 +28,20 @@ Then:
 
 2. Build the binary:
   ```shell
-  xk6 build --with github.com/grafana/xk6-sql
+  xk6 build --with github.com/bhaskarkoley/xk6-sql-oracle
   ```
 
   If you're using SQLite, ensure you have a C compiler installed (see the
   prerequisites note) and set `CGO_ENABLED=1` in the environment:
   ```shell
-  CGO_ENABLED=1 xk6 build --with github.com/grafana/xk6-sql
+  CGO_ENABLED=1 CGO_CFLAGS="-D_LARGEFILE64_SOURCE" xk6 build --with github.com/bhaskarkoley/xk6-sql-oracle
   ```
 
   On Windows this is done slightly differently:
   ```shell
   set CGO_ENABLED=1
-  xk6 build --with github.com/grafana/xk6-sql
+  CGO_CFLAGS="-D_LARGEFILE64_SOURCE"
+  xk6 build --with github.com/bhaskarkoley/xk6-sql-oracle
   ```
 
 ## Development
@@ -51,7 +52,7 @@ make
 ```
 Once built, you can run your newly extended `k6` using:
 ```shell
- ./k6 run examples/sqlite3_test.js
+ ./k6 run examples/oracle_test.js
  ```
 
 ## Example
@@ -60,25 +61,20 @@ Once built, you can run your newly extended `k6` using:
 // script.js
 import sql from 'k6/x/sql';
 
-const db = sql.open("sqlite3", "./test.db");
-
-export function setup() {
-  db.exec(`CREATE TABLE IF NOT EXISTS keyvalues (
-           id integer PRIMARY KEY AUTOINCREMENT,
-           key varchar NOT NULL,
-           value varchar);`);
-}
+// The second argument is a Oracle connection string, e.g.
+// `user="myuser" password="mypass" connectString="127.0.0.1:1521/mydb"`
+const db = sql.open('oracle', ``);
 
 export function teardown() {
   db.close();
 }
 
 export default function () {
-  db.exec("INSERT INTO keyvalues (key, value) VALUES('plugin-name', 'k6-plugin-sql');");
 
-  let results = sql.query(db, "SELECT * FROM keyvalues;");
+  let results = sql.query(db, "SELECT * FROM dual");
   for (const row of results) {
-    console.log(`key: ${row.key}, value: ${row.value}`);
+    // Convert array of ASCII integers into strings. See https://github.com/grafana/xk6-sql/issues/12
+    console.log(`bh`);
   }
 }
 ```
@@ -145,14 +141,14 @@ and run the application.
 The following command will build a custom `k6` image incorporating the `xk6-sql` extension
 built from the local source files.
 ```shell
-docker build -t grafana/k6-for-sql:latest .
+docker build -t grafana/k6-for-sql-oracle:latest .
 ```
 Using this image, you may then execute the [examples/sqlite3_test.js](examples/sqlite3_test.js) script
 by running the following command:
 ```shell
-docker run -v $PWD:/scripts -it --rm grafana/k6-for-sql:latest run /scripts/examples/sqlite3_test.js
+docker run -v $PWD:/scripts -it --rm grafana/k6-for-sql-oracle:latest run /scripts/examples/oracle_test.js
 ```
 For those on Mac or Linux, the `docker-run.sh` script simplifies the command:
 ```shell
-./docker-run.sh examples/sqlite3_test.js
+./docker-run.sh examples/oracle_test.js
 ```
