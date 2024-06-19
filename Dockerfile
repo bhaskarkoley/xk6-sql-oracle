@@ -1,6 +1,7 @@
-# Multi-stage build to generate custom k6 with extension
+### golang debian base image ###
 FROM golang:latest
 
+# Install necessary packages for adding new repos and wget & unzip, clean cache afterwards to minimize layer size
 RUN apt-get update && apt-get install -y \
     build-essential  \
     git \
@@ -12,19 +13,18 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /opt
 
-RUN wget https://download.oracle.com/otn_software/linux/instantclient/211000/instantclient-basiclite-linux.x64-21.1.0.0.0.zip \
-    && wget https://download.oracle.com/otn_software/linux/instantclient/211000/instantclient-sdk-linux.x64-21.1.0.0.0.zip
+# Download the Basic packages from Oracle and verify their checksums
+RUN wget https://download.oracle.com/otn_software/linux/instantclient/2340000/instantclient-basiclite-linux.x64-23.4.0.24.05.zip
 
-# Unpack "Basic", "SDK" packages
-RUN unzip instantclient-basiclite-linux.x64-21.1.0.0.0.zip \
-    && unzip instantclient-sdk-linux.x64-21.1.0.0.0.zip \
+# Unpack packages
+RUN unzip instantclient-basiclite-linux.x64-23.4.0.24.05.zip \
     && rm -f *.zip
 
-RUN mv instantclient_21_1 instantclient
+RUN mv instantclient_23_4 instantclient
 WORKDIR /opt/instantclient
 
 # Soft links
-RUN if [ ! -e libclntsh.so ]; then ln -s libclntsh.so.21.1 libclntsh.so; fi
+RUN if [ ! -e libclntsh.so ]; then ln -s libclntsh.so.23.4 libclntsh.so; fi
 
 # set environment variables
 ENV LD_LIBRARY_PATH /opt/instantclient
@@ -35,7 +35,10 @@ ENV PATH $ORACLE_HOME:$PATH
 WORKDIR $GOPATH/src/go.k6.io/k6
 ADD . .
 
+# install xk6 Custom k6 Builder
 RUN go install go.k6.io/xk6/cmd/xk6@latest
+
+# build oracle sql driver for k6 and create a custom k6 binary
 RUN CGO_ENABLED=1 CGO_CFLAGS="-D_LARGEFILE64_SOURCE" xk6 build \
     --with github.com/bhaskarkoley/xk6-sql-oracle=. \
     --output /usr/bin/k6
@@ -60,4 +63,5 @@ WORKDIR /home/k6
 # copy all scripts to home dir
 ADD examples /home/k6
 
+# CMD to keep the container running for ever
 CMD exec /bin/bash -c "trap : TERM INT; sleep infinity & wait"
