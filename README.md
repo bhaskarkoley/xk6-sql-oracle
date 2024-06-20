@@ -130,7 +130,7 @@ docker build -t grafana/k6-for-sql-oracle:latest .
 Using this image, you may then execute the [examples/sqlite3_test.js](examples/sqlite3_test.js) script
 by running the following command:
 ```shell
-docker run -v $PWD:/scripts -it --rm grafana/k6-for-sql-oracle:latest run /scripts/examples/oracle_test.js
+docker run -v $PWD:/scripts -it --rm grafana/k6-for-sql-oracle:latest k6 run scripts/examples/oracle_test.js
 ```
 For those on Mac or Linux, the `docker-run.sh` script simplifies the command:
 ```shell
