@@ -4,8 +4,7 @@ This is a [k6](https://github.com/grafana/k6) extension using the
 [xk6](https://github.com/grafana/xk6) system.
 
 Supported RDBMSs: `mysql`, `postgres`, `sqlite3`, `sqlserver`, `azuresql`, `oracle`. See the [examples](examples)
-directory for usage. Other RDBMSs are not supported, see
-[details below](#support-for-other-rdbmss).
+directory for usage. The Dockerfile uses the golang Debian image which included glibc and installs the libaio1, instantclient-basiclite-linux.x64-23.4.0.24.05.
 
 
 ## Build
@@ -52,7 +51,7 @@ make
 ```
 Once built, you can run your newly extended `k6` using:
 ```shell
- ./k6 run examples/oracle_test.js
+ k6 run examples/oracle_test.js
  ```
 
 ## Example
@@ -82,7 +81,7 @@ export default function () {
 Result output:
 
 ```shell
-$ ./k6 run script.js
+$ k6 run script.js
 
           /\      |‾‾| /‾‾/   /‾‾/
      /\  /  \     |  |/  /   /  /
