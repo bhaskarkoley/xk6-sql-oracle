@@ -4,7 +4,7 @@ This is a [k6](https://github.com/grafana/k6) extension using the
 [xk6](https://github.com/grafana/xk6) system.
 
 Supported RDBMSs: `mysql`, `postgres`, `sqlite3`, `sqlserver`, `azuresql`, `oracle`. See the [examples](examples)
-directory for usage. The Dockerfile uses the golang Debian image which included glibc and installs the libaio1, instantclient-basiclite-linux.x64-23.4.0.24.05.
+directory for usage. The Dockerfile uses the golang Debian image which includes glibc to run the oracle client, then installs the libaio1, instantclient-basiclite-linux.x64-23.4.0.24.05.
 
 
 ## Build
