@@ -31,6 +31,7 @@ ENV LD_LIBRARY_PATH /opt/instantclient
 ENV ORACLE_BASE /opt/instantclient
 ENV ORACLE_HOME $ORACLE_BASE
 ENV PATH $ORACLE_HOME:$PATH
+ENV XK6_RACE_DETECTOR 1
 
 WORKDIR $GOPATH/src/go.k6.io/k6
 ADD . .
@@ -39,7 +40,7 @@ ADD . .
 RUN go install go.k6.io/xk6/cmd/xk6@latest
 
 # build oracle sql driver for k6 and create a custom k6 binary
-RUN CGO_ENABLED=1 CGO_CFLAGS="-D_LARGEFILE64_SOURCE" xk6 build \
+RUN xk6 build \
     --with github.com/bhaskarkoley/xk6-sql-oracle=. \
     --output /usr/bin/k6
 
