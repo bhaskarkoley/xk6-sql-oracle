@@ -1,6 +1,6 @@
 module github.com/bhaskarkoley/xk6-sql-oracle
 
-go 1.23.6
+go 1.22.4
 
 require (
 	github.com/go-sql-driver/mysql v1.9.0
